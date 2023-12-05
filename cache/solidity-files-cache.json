@@ -41,8 +41,8 @@
       ]
     },
     "D:\\development\\DoAnPTTKHT\\SocialWeb3\\contracts\\SocialWeb3.sol": {
-      "lastModificationDate": 1701767368227,
-      "contentHash": "64673106534670916d9e52955eb8e002",
+      "lastModificationDate": 1701769479220,
+      "contentHash": "655b0207aff8d4304064afe3f29c979e",
       "sourceName": "contracts/SocialWeb3.sol",
       "solcConfig": {
         "version": "0.8.19",

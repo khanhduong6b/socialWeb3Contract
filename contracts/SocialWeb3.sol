@@ -33,12 +33,24 @@ contract SocialWeb3 is Ownable, ERC721Enumerable {
     event CreatePost(Post post);
     event UpdateProfile(uint256 profileId, ProfileNFTData profileData);
 
-    constructor () ERC721("SocialWeb3", "SW3") {
+    constructor() ERC721("SocialWeb3", "SW3") {
     }
 
-    function createProfileNFT(ProfileNFTData calldata _profileNFTData) public {
-        require(handleExists[_profileNFTData.handle], "Handle already exists");
-        require(_profileNFTData.owner == msg.sender, "Owner different from msg.sender");
+    modifier handleDoesNotExist(string calldata _handle) {
+        require(!handleExists[_handle], "Handle already exists");
+        _;
+    }
+
+    modifier isOwner(address _owner) {
+        require(_owner == msg.sender, "Owner different from msg.sender");
+        _;
+    }
+
+    function createProfileNFT(ProfileNFTData calldata _profileNFTData)
+        external
+        handleDoesNotExist(_profileNFTData.handle)
+        isOwner(_profileNFTData.owner)
+    {
         profileId++;
         profileNFTData[profileId] = _profileNFTData;
         handleExists[_profileNFTData.handle] = true;
@@ -47,8 +59,8 @@ contract SocialWeb3 is Ownable, ERC721Enumerable {
         emit CreateProfileNFT(_profileNFTData);
     }
 
-    function createPost(string calldata _handle, string calldata _content) public {
-        require(!handleExists[_handle], "Handle not found");
+    function createPost(string calldata _handle, string calldata _content) external {
+        require(handleExists[_handle], "Handle not found");
         postId++;
         posts[postId] = Post({
             postId: postId,
@@ -57,41 +69,41 @@ contract SocialWeb3 is Ownable, ERC721Enumerable {
             timestamp: block.timestamp
         });
         profilePosts[_handle].push(postId);
-
         emit CreatePost(posts[postId]);
     }
 
-    function getPost(uint256 _postId) public view returns (Post memory) {
+    function getPost(uint256 _postId) external view returns (Post memory) {
         return posts[_postId];
     }
-    
-    function getPostWithNumber(uint256 _number) public view returns (Post[] memory) {
+
+    function getPostWithNumber(uint256 _number) external view returns (Post[] memory) {
         Post[] memory postsTemp = new Post[](10);
-        for (uint i=1;i<=10;i++)
-        postsTemp[i] = posts[_number+i];
-        return postsTemp; 
+        for (uint256 i = 1; i <= 10; i++) postsTemp[i - 1] = posts[_number + i];
+        return postsTemp;
     }
 
-    function getProfilePosts(string calldata _handle) public view returns (Post[] memory) {
-        uint256 postslength= profilePosts[_handle].length;
+    function getProfilePosts(string calldata _handle) external view returns (Post[] memory) {
+        uint256 postslength = profilePosts[_handle].length;
         Post[] memory postsTemp = new Post[](postslength);
-        for (uint i=0;i<postslength;i++)
-        postsTemp[i] = posts[profilePosts[_handle][i]];
-        return postsTemp; 
+        for (uint256 i = 0; i < postslength; i++)
+            postsTemp[i] = posts[profilePosts[_handle][i]];
+        return postsTemp;
     }
 
-    function getProfileNFTData(uint256 _profileId) public view returns (ProfileNFTData memory) {
+    function getProfileNFTData(uint256 _profileId) external view returns (ProfileNFTData memory) {
         return profileNFTData[_profileId];
     }
 
-    function getUserProfiles(address _user) public view returns (uint256[] memory) {
+    function getUserProfiles(address _user) external view returns (uint256[] memory) {
         return userProfiles[_user];
     }
 
-    function updateProfile(uint256 _profileId, ProfileNFTData calldata _newProfileData) public onlyOwner {
+    function updateProfile(uint256 _profileId, ProfileNFTData calldata _newProfileData)
+        external
+        onlyOwner
+    {
         require(_profileId <= profileId, "Invalid profile ID");
         profileNFTData[_profileId] = _newProfileData;
-
         emit UpdateProfile(_profileId, _newProfileData);
     }
 }

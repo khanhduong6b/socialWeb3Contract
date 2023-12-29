@@ -41,8 +41,8 @@
       ]
     },
     "D:\\development\\blockchain\\SocialWeb3\\contracts\\SocialWeb3.sol": {
-      "lastModificationDate": 1703819118971,
-      "contentHash": "e1128cd96d53d7c40bcdf09b047a8da4",
+      "lastModificationDate": 1703823314134,
+      "contentHash": "ff280a0ccc8367754887f89a2ee46039",
       "sourceName": "contracts/SocialWeb3.sol",
       "solcConfig": {
         "version": "0.8.19",
@@ -68,12 +68,10 @@
         }
       },
       "imports": [
-        "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol",
-        "@openzeppelin/contracts/access/Ownable.sol",
-        "@openzeppelin/contracts/utils/Strings.sol"
+        "./Profile.sol"
       ],
       "versionPragmas": [
-        "^0.8.4"
+        "^0.8.19"
       ],
       "artifacts": [
         "SocialWeb3"
@@ -192,7 +190,7 @@
       ]
     },
     "D:\\development\\blockchain\\SocialWeb3\\node_modules\\@openzeppelin\\contracts\\access\\Ownable.sol": {
-      "lastModificationDate": 1703031206393,
+      "lastModificationDate": 1703822613584,
       "contentHash": "5a20b2cad87ddb61c7a3a6af21289e28",
       "sourceName": "@openzeppelin/contracts/access/Ownable.sol",
       "solcConfig": {
@@ -229,7 +227,7 @@
       ]
     },
     "D:\\development\\blockchain\\SocialWeb3\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\extensions\\ERC721Enumerable.sol": {
-      "lastModificationDate": 1703031206175,
+      "lastModificationDate": 1703822613456,
       "contentHash": "212e86880d210b6cac8c3eb0cd6b1fad",
       "sourceName": "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol",
       "solcConfig": {
@@ -337,8 +335,8 @@
       ]
     },
     "D:\\development\\blockchain\\SocialWeb3\\node_modules\\@openzeppelin\\contracts\\utils\\Context.sol": {
-      "lastModificationDate": 1703031206068,
-      "contentHash": "f07feb4a44b1a4872370da5aa70e8e46",
+      "lastModificationDate": 1703822613385,
+      "contentHash": "5f2c5c4b6af2dd4551027144797bc8be",
       "sourceName": "@openzeppelin/contracts/utils/Context.sol",
       "solcConfig": {
         "version": "0.8.19",
@@ -372,7 +370,7 @@
       ]
     },
     "D:\\development\\blockchain\\SocialWeb3\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\ERC721.sol": {
-      "lastModificationDate": 1703031206168,
+      "lastModificationDate": 1703822613452,
       "contentHash": "95602b04f0b53f1139f4668d123ddeb7",
       "sourceName": "@openzeppelin/contracts/token/ERC721/ERC721.sol",
       "solcConfig": {
@@ -1068,6 +1066,45 @@
       ],
       "artifacts": [
         "OwnableInterface"
+      ]
+    },
+    "D:\\development\\blockchain\\SocialWeb3\\contracts\\Profile.sol": {
+      "lastModificationDate": 1703822677062,
+      "contentHash": "4ad144a26bd0173b3b51d197f230ca6c",
+      "sourceName": "contracts/Profile.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol",
+        "@openzeppelin/contracts/access/Ownable.sol",
+        "@openzeppelin/contracts/utils/Strings.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "Profile"
       ]
     }
   }

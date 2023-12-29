@@ -1,39 +1,161 @@
+// test/SocialWeb3.test.js
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-describe("SocialWeb3Contract", async function () {
-  it("Create NFT Profile successfully", async function () {
-    const [owner] = await ethers.getSigners();
-    const hardhatToken = await ethers.deployContract("SocialWeb3");
-    const profile = await hardhatToken.createProfileNFT([
-      owner.address,
-      "test",
-      "test",
-      "test",
-      "test",
-    ]);
+describe("Profile", function () {
+  let SocialWeb3;
+  let socialWeb3;
+  let owner;
+  let addr1;
+  let addr2;
 
-    const ownerBalance = await hardhatToken.balanceOf(owner.address);
-    expect(await ownerBalance).to.equal(1);
+  beforeEach(async function () {
+    [owner, addr1, addr2] = await ethers.getSigners();
+
+    // Deploy the contract
+    SocialWeb3 = await ethers.getContractFactory("SocialWeb3");
+    socialWeb3 = await ethers.deployContract("SocialWeb3"); // Ensure the contract is mined
+  });
+
+  it("Should create a profile NFT", async function () {
+    const profileData = {
+      owner: owner.address,
+      handle: "test_handle",
+      name: "Test Name",
+      imageURI: "test_image_uri",
+      bio: "Test Bio",
+    };
+
+    await socialWeb3.createProfileNFT(profileData);
+
+    // Get the created profile data
+    const retrievedProfile = await socialWeb3.getProfileNFTData(1);
+
+    // Verify the created profile data
+    expect(retrievedProfile.owner).to.equal(profileData.owner);
+    expect(retrievedProfile.handle).to.equal(profileData.handle);
+    expect(retrievedProfile.name).to.equal(profileData.name);
+    expect(retrievedProfile.imageURI).to.equal(profileData.imageURI);
+    expect(retrievedProfile.bio).to.equal(profileData.bio);
+  });
+
+  it("Should update a profile", async function () {
+    const handle = "test_handle";
+    const newName = "Updated Name";
+    const newImageURI = "updated_image_uri";
+
+    await socialWeb3.createProfileNFT({
+      owner: owner.address,
+      handle: handle,
+      name: "Test Name",
+      imageURI: "test_image_uri",
+      bio: "Test Bio",
+    });
+
+    // Update the profile
+    await socialWeb3.updateProfile(1, {
+      owner: owner.address,
+      handle: handle,
+      name: newName,
+      imageURI: newImageURI,
+      bio: "Updated Bio",
+    });
+
+    // Get the updated profile data
+    const updatedProfile = await socialWeb3.getProfileNFTData(1);
+
+    // Verify the updated profile data
+    expect(updatedProfile.name).to.equal(newName);
+    expect(updatedProfile.imageURI).to.equal(newImageURI);
+  });
+  it("Should not allow creating a profile with an existing handle", async function () {
+    const handle = "test_handle";
+    const profileData = {
+      owner: owner.address,
+      handle: handle,
+      name: "Test Name",
+      imageURI: "test_image_uri",
+      bio: "Test Bio",
+    };
+
+    // Create a profile with the given handle
+    await socialWeb3.createProfileNFT(profileData);
+
+    // Try to create another profile with the same handle (should fail)
+    await expect(socialWeb3.createProfileNFT(profileData)).to.be.revertedWith(
+      "Handle already exists"
+    );
   });
 });
 
-// describe("CCIP test", function () {
-//   it("CCIP should be created successfully", async function () {
-//     const [owner] = await ethers.getSigners();
+describe("Post", function () {
+  let SocialWeb3;
+  let socialWeb3;
+  let owner;
+  let addr1;
+  let addr2;
 
-//     const hardhatToken = await ethers.deployContract("SocialWeb3");
+  beforeEach(async function () {
+    [owner, addr1, addr2] = await ethers.getSigners();
 
-//     const SourceMinter = await ethers.deployContract("SourceMinter", [
-//       "0xd0daae2231e9cb96b94c8512223533293c3693bf",
-//       "0x779877A7B0D9E8603169DdbD7836e478b4624789",
-//     ]);
-//     const DestinationMinter = await ethers.deployContract("DestinationMinter", [
-//       "0xeb52e9ae4a9fb37172978642d4c141ef53876f26",
-//       "0xdc2CC710e42857672E7907CF474a69B63B93089f",
-//     ]);
+    // Deploy the contract
+    SocialWeb3 = await ethers.getContractFactory("SocialWeb3");
+    socialWeb3 = await ethers.deployContract("SocialWeb3"); // Ensure the contract is mined
+  });
 
-//     const profile = await SourceMinter.mint(2664363617261496610,msg.sender,);
+  it("Should create a post", async function () {
+    const handle = "test_handle";
+    const content = "Test content";
 
-//   });
-// });
+    await socialWeb3.createProfileNFT({
+      owner: owner.address,
+      handle: handle,
+      name: "Test Name",
+      imageURI: "test_image_uri",
+      bio: "Test Bio",
+    });
+
+    await socialWeb3.createPost(handle, content);
+
+    // Get the created post
+    const retrievedPost = await socialWeb3.getPost(1);
+
+    // Verify the created post
+    expect(retrievedPost.handle).to.equal(handle);
+    expect(retrievedPost.content).to.equal(content);
+  });
+
+  it("Should get profile posts", async function () {
+    const handle = "test_handle";
+    const content1 = "Test content 1";
+    const content2 = "Test content 2";
+
+    await socialWeb3.createProfileNFT({
+      owner: owner.address,
+      handle: handle,
+      name: "Test Name",
+      imageURI: "test_image_uri",
+      bio: "Test Bio",
+    });
+
+    await socialWeb3.createPost(handle, content1);
+    await socialWeb3.createPost(handle, content2);
+
+    // Get profile posts
+    const profilePosts = await socialWeb3.getProfilePosts(handle);
+
+    // Verify the number of posts and their content
+    expect(profilePosts.length).to.equal(2);
+    expect(profilePosts[0].content).to.equal(content1);
+    expect(profilePosts[1].content).to.equal(content2);
+  });
+  it("Should not allow creating a post with a non-existing handle", async function () {
+    const nonExistingHandle = "non_existing_handle";
+    const content = "Test content";
+
+    // Try to create a post with a handle that does not exist (should fail)
+    await expect(
+      socialWeb3.createPost(nonExistingHandle, content)
+    ).to.be.revertedWith("Handle not found");
+  });
+});

@@ -13,9 +13,9 @@ import {SocialWeb3} from "./SocialWeb3.sol";
 contract DestinationMinter is CCIPReceiver {
     SocialWeb3 socialWeb3;
 
-    event MintCallSuccessfull();
+    event CreateProfileCallSuccessfull();
 
-    constructor(address router, address nftAddress) CCIPReceiver(router) {
+    constructor(address router, address payable nftAddress) CCIPReceiver(router) {
         socialWeb3 = SocialWeb3(nftAddress);
     }
 
@@ -24,6 +24,6 @@ contract DestinationMinter is CCIPReceiver {
     ) internal override {
         (bool success, ) = address(socialWeb3).call(message.data);
         require(success);
-        emit MintCallSuccessfull();
+        emit CreateProfileCallSuccessfull();
     }
 }

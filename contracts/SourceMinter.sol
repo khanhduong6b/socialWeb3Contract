@@ -30,7 +30,7 @@ contract SourceMinter is Withdraw {
 
     receive() external payable {}
 
-    function mint(
+    function createProfileNFT(
         uint64 destinationChainSelector,
         address receiver,
         PayFeesIn payFeesIn

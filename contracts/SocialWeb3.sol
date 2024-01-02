@@ -81,9 +81,9 @@ contract SocialWeb3 is Profile {
         require(sent, "Failed to send Ether");
     }
 
-        // Function to receive Ether. msg.data must be empty
-    // receive() external payable {}
+    // Function to receive Ether. msg.data must be empty
+    receive() external payable {}
 
-    // // Fallback function is called when msg.data is not empty
-    // fallback() external payable {}
+    // Fallback function is called when msg.data is not empty
+    fallback() external payable {}
 }

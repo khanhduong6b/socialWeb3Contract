@@ -1,65 +1,42 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+import "./libraries/DataTypes.sol";
+import "./libraries/Events.sol";
+import "./libraries/Errors.sol";
 import "./Profile.sol";
 
-contract SocialWeb3 is Profile {
+contract SocialWeb3 {
+
     uint256 public postId;
     
     bool public _paused;
 
-    struct Post {
-        uint256 postId;
-        string handle;
-        string content;
-        uint256 timestamp;
-    }
-
-
-    mapping(uint256 => Post) private posts;
+    mapping(uint256 => address) private profile;
+    mapping(uint256 => DataTypes.Post) private posts;
     mapping(string => uint256[]) private profilePosts;
-
-    
-    event CreatePost(Post post);
-
-    constructor(string memory baseURI)
-        Profile(baseURI) {
-    }
-
 
     modifier onlyWhenNotPaused {
         require(!_paused, "Contract currently paused");
         _;
     }
 
-    function createPost(string calldata _handle, string calldata _content) external handleAlreadyExists(_handle) {
-        postId++;
-        posts[postId] = Post({
-            postId: postId,
-            handle: _handle,
-            content: _content,
-            timestamp: block.timestamp
-        });
-        profilePosts[_handle].push(postId);
-        emit CreatePost(posts[postId]);
-    }
-
-    function getPost(uint256 _postId) external view returns (Post memory) {
-        return posts[_postId];
-    }
-
-    function getPostWithNumber(uint256 _number) external view returns (Post[] memory) {
-        Post[] memory postsTemp = new Post[](10);
-        for (uint256 i = 1; i <= 10; i++) postsTemp[i - 1] = posts[_number + i];
-        return postsTemp;
-    }
-
-    function getProfilePosts(string calldata _handle) external view returns (Post[] memory) {
-        uint256 postslength = profilePosts[_handle].length;
-        Post[] memory postsTemp = new Post[](postslength);
-        for (uint256 i = 0; i < postslength; i++)
-            postsTemp[i] = posts[profilePosts[_handle][i]];
-        return postsTemp;
+    /**
+    * @dev mint allows an user to mint 1 ProfileNFT per transaction.
+    */
+    function createProfileNFT(ProfileNFTData calldata _profileNFTData)
+        external payable virtual override
+        isOwner(_profileNFTData.owner)
+    {
+        if (!handleExists[_profileNFTData.handle]) revert Errors.HandleNotFound();
+        require(msg.value >= _price, "Ether sent is not correct");
+        profileId++;
+        profileNFTData[profileId] = _profileNFTData;
+        userHandles[msg.sender].push(_profileNFTData.handle);
+        handleExists[_profileNFTData.handle] = true;
+        _safeMint(msg.sender, profileId);
+        userProfiles[msg.sender].push(profileId);
+        emit CreateProfileNFT(_profileNFTData);
     }
 
 
